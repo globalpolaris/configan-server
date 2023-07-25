@@ -1,12 +1,11 @@
 from netaddr import IPAddress, IPNetwork
-from timezone import timezone_dict
-import requests
+from .timezone import timezone_dict
 import json
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from ipaddress import IPv4Network, ip_address, ip_network
 
-load_dotenv()
+# load_dotenv()
 
 # data = {'code': 0, 'message': 'ok', 'data': [{'TimeZone': {'IsInside': 'false', 'AskGeoId': 19854, 'MinDistanceKm': 13.89608, 'TimeZoneId': 'Pacific/Kwajalein', 'ShortName': 'MHT', 'CurrentOffsetMs': 43200000, 'WindowsStandardName': 'Fiji Standard Time', 'InDstNow': 'false'}}]}
 

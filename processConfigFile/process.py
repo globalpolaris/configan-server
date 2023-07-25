@@ -1,22 +1,16 @@
 import json
-import boto3
 import uuid
 from modules.fortigate import ToFortigate
 from modules.juniper_srx import ToJuniperSRX
 import re
 from modules import misc
 from modules import mapinterface
-from transform_json import transform_json_srx, transform_json_fgt
+from .transform_json import transform_json_srx, transform_json_fgt
 from pathlib import Path
-
-
-s3 = boto3.client('s3')
-bucket_name = 'configan-file'
 
 
 def to_srx(file, output_file):
     srx = ToJuniperSRX("", "", [], [], [], [], [], [], [], [], [], [], [])
-    ctr = 0
     ctr_policies = 0
     with open(file) as f:
         for line in f.read().split('end\n'):
@@ -94,7 +88,6 @@ def to_srx(file, output_file):
             #     print(l)
             # for l in line.split('\n'):
             #     print(l)
-    print(srx.addrgrp)
     transform_json_srx(srx, output_file)
 
     # output_srx(output_file, srx)
@@ -188,42 +181,29 @@ def to_fgt(file, timezone,  output_file):
     transform_json_fgt(fgt, output_file, timezone)
 
 
-def lambda_handler(event, context):
-    string = ""
-    # data = json.loads(event['body'])
-    destination = event['destination']
-    s3_get_full_path = f"{destination}/{event['filename']}"
-    filename = f"/tmp/result_{event['filename']}"
-    final_file = f"{uuid.uuid4()}_{Path(event['filename']).stem}.json"
-    s3_path = f"final/{final_file}"
-    print(final_file)
-    try:
-        s3.download_file(bucket_name, s3_get_full_path, filename)
-        file = f"/tmp/{final_file}"
-        if destination.lower() == "junipersrx":
-            to_srx(filename, f"/tmp/{final_file}")
-
-        elif destination.lower() == "fortigate":
-            print(event)
-            timezone = event['timezone']
-            to_fgt(filename, timezone, f"/tmp/{final_file}")
-            # response = s3.get_object(Bucket=bucket, Key=data['filename'])
-        s3.upload_file(f"/tmp/{final_file}",
-                       bucket_name, f"final/{final_file}")
-        # if destination.lower() == "junipersrx":
-        data_json = json.loads(s3.get_object(
-            Bucket=bucket_name, Key=f"final/{final_file}")["Body"].read())
-        # elif destination.lower() == "fortigate":
-        #     data_json = s3.generate_presigned_url('get_object',Params={'Bucket': bucket_name,'Key': s3_path},ExpiresIn=300)
-
+def process(destination, timezone, filename):
+    print("Dest:", destination)
+    print("Filename:", filename)
+    id = uuid.uuid4()
+    if destination.lower() == 'fortigate':
+        filename = str(Path(f"./config_files/{filename}").resolve())
+        print(filename)
+        dst_file = str(Path(f"./config_files/json/{id}.json").resolve())
+        to_fgt(filename, timezone, dst_file)
+        f = open(dst_file)
+        data = json.load(f)
         return {
-            "data": data_json,
-            "filename": final_file
+            "data": data,
+            "filename": filename
         }
-
-    except Exception as e:
-        print(f"{e}")
+    if destination.lower() == 'junipersrx':
+        filename = str(Path(f"./config_files/{filename}").resolve())
+        print(filename)
+        dst_file = str(Path(f"./config_files/json/{id}.json").resolve())
+        to_srx(filename, dst_file)
+        f = open(dst_file)
+        data = json.load(f)
         return {
-            "msg": e
+            "data": data,
+            "filename": filename
         }
-    # print(json.dumps(event['body']))

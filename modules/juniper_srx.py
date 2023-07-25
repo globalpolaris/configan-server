@@ -1,6 +1,6 @@
 import re
 # from misc import get_timezone
-from misc import netmask_to_cidr
+from .misc import netmask_to_cidr
 
 
 class ToJuniperSRX:
