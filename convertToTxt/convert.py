@@ -6,9 +6,7 @@ import uuid
 
 def convert(destination, data):
     id = uuid.uuid4()
-    print(data)
 
-    # TODO implement
     try:
         if destination.lower() == "junipersrx":
             dst_file = str(
@@ -20,7 +18,7 @@ def convert(destination, data):
             output_fgt(dst_file, data)
         return {
             'statusCode': 200,
-            'body': "Success"
+            'body': dst_file
         }
     except Exception as e:
         return {

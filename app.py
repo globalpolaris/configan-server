@@ -3,12 +3,16 @@ from flask_cors import CORS
 import os
 from processConfigFile.process import process
 from convertToTxt.convert import convert
+from pathlib import Path
 
 UPLOAD_FOLDER = './config_files'
 ALLOWED_EXTENSIONS = {'txt'}
 app = Flask(__name__)
 CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+Path("./config_files/json").mkdir(parents=True, exist_ok=True)
+Path("./config_files/result").mkdir(parents=True, exist_ok=True)
 
 
 def allowed_file(filename):
@@ -20,12 +24,11 @@ def allowed_file(filename):
 def convert_to_txt():
     if request.method == 'POST':
         req = request.get_json()
-        destination = req["destination"]
+        destination = req["destinationDevice"]
         data = req["data"]
-        convert(destination, data)
-        return {
-            "message": "Convert To TXT"
-        }
+        print(data)
+        result = convert(destination, data)
+        return result
 
 
 @app.route("/process-config-file", methods=['POST'])

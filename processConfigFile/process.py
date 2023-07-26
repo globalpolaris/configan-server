@@ -182,12 +182,10 @@ def to_fgt(file, timezone,  output_file):
 
 
 def process(destination, timezone, filename):
-    print("Dest:", destination)
-    print("Filename:", filename)
+
     id = uuid.uuid4()
     if destination.lower() == 'fortigate':
         filename = str(Path(f"./config_files/{filename}").resolve())
-        print(filename)
         dst_file = str(Path(f"./config_files/json/fgt_{id}.json").resolve())
         to_fgt(filename, timezone, dst_file)
         f = open(dst_file)
