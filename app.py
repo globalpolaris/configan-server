@@ -2,6 +2,7 @@ from flask import Flask, request, flash, redirect
 from flask_cors import CORS
 import os
 from processConfigFile.process import process
+from convertToTxt.convert import convert
 
 UPLOAD_FOLDER = './config_files'
 ALLOWED_EXTENSIONS = {'txt'}
@@ -18,6 +19,10 @@ def allowed_file(filename):
 @app.route("/convert-to-txt", methods=['POST'])
 def convert_to_txt():
     if request.method == 'POST':
+        req = request.get_json()
+        destination = req["destination"]
+        data = req["data"]
+        convert(destination, data)
         return {
             "message": "Convert To TXT"
         }

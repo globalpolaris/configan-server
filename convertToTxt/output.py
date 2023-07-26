@@ -1,5 +1,5 @@
-import misc
-import mapinterface
+from modules import misc
+from modules import mapinterface
 
 
 def output_srx(file, srx):

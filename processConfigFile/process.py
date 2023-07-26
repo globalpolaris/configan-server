@@ -188,7 +188,7 @@ def process(destination, timezone, filename):
     if destination.lower() == 'fortigate':
         filename = str(Path(f"./config_files/{filename}").resolve())
         print(filename)
-        dst_file = str(Path(f"./config_files/json/{id}.json").resolve())
+        dst_file = str(Path(f"./config_files/json/fgt_{id}.json").resolve())
         to_fgt(filename, timezone, dst_file)
         f = open(dst_file)
         data = json.load(f)
@@ -199,7 +199,7 @@ def process(destination, timezone, filename):
     if destination.lower() == 'junipersrx':
         filename = str(Path(f"./config_files/{filename}").resolve())
         print(filename)
-        dst_file = str(Path(f"./config_files/json/{id}.json").resolve())
+        dst_file = str(Path(f"./config_files/json/srx_{id}.json").resolve())
         to_srx(filename, dst_file)
         f = open(dst_file)
         data = json.load(f)
